@@ -2,7 +2,10 @@ module MyArrayUtils
 (
 	NormalArray, 
 	Normal2DArray, 
+	Normal2DArrayGenerationList,
 	toArray, 
+	to2DArray,
+	generate2DArray,
 	count, 
 	extractArrayElement, 
 	normal2DArrayToString
@@ -15,10 +18,29 @@ import MyTrace
 
 type NormalArray elementType = Array Int elementType
 type Normal2DArray elementType = Array (Int, Int) elementType
+type Normal2DArrayGenerationList elementType = [((Int, Int), elementType)]
 
 toArray :: [elementType] -> NormalArray elementType
 toArray list =
 	listArray (0, length list - 1) list
+	
+to2DArray :: [[elementType]] -> Normal2DArray elementType
+to2DArray list =
+	array ((0, 0), (height, width)) values
+	where
+		height = length list
+		width = length (list !! 0)
+		getValue x y = (list !! y) !! x
+		values = [ ((y, x), getValue y x) | y <- [0 .. height - 1], x <- [0.. width - 1] ]
+		
+ 
+generate2DArray :: Normal2DArrayGenerationList t -> Int -> Int -> t -> Normal2DArray t
+generate2DArray list height width defaultElement = 
+	array 
+		((0, 0), (height - 1, width - 1))
+		[ ((y, x), defaultElement) | y <- [0 .. height - 1], x <- [0 .. width - 1] ]
+	//
+	list
 
 instance Countable (NormalArray elementType) where --here is an important note: -XFlexibleInstances command line argument must be used in order to compile this code
 	count theArray = snd (bounds theArray) + 1
