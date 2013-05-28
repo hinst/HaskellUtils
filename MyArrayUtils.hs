@@ -73,12 +73,12 @@ extractArrayElement theArray index =
 		result = theArray ! index
 		
 normal2DArrayToStringIterate :: (Show elementType) => 
-	Normal2DArray elementType -> Int -> Int -> Int -> Int -> String
-normal2DArrayToStringIterate theArray x y w h =
+	Normal2DArray elementType -> Int -> Int -> Int -> Int -> Int -> String
+normal2DArrayToStringIterate theArray x y w h elementLength =
 	if 
 		(x < w) && (y < h)
 	then
-		show (theArray ! (y, x) ) 
+		alignLength (show (theArray ! (y, x) ) )
 		++ 
 		following
 	else
@@ -88,13 +88,24 @@ normal2DArrayToStringIterate theArray x y w h =
 			if 
 				(x + 1) < w
 			then
-				' ' : normal2DArrayToStringIterate theArray (x + 1) y w h
+				' ' : normal2DArrayToStringIterate theArray (x + 1) y w h elementLength
 			else
-				'\n' : normal2DArrayToStringIterate theArray 0 (y + 1) w h
+				'\n' : normal2DArrayToStringIterate theArray 0 (y + 1) w h elementLength
+		alignLength text = 
+			if 
+				textLength < elementLength
+			then
+				take (elementLength - textLength) (repeat ' ') ++ text
+			else
+				text
+			where
+				textLength = length text
+		
+			
 
-normal2DArrayToString :: (Show elementType) => Normal2DArray elementType -> String
-normal2DArrayToString theArray = 
-	normal2DArrayToStringIterate theArray 0 0 width height
+normal2DArrayToString :: (Show elementType) => Normal2DArray elementType -> Int -> String
+normal2DArrayToString theArray elementLength = 
+	normal2DArrayToStringIterate theArray 0 0 width height elementLength
 	where
 		dimension = snd (bounds theArray)
 		height = fst dimension + 1
