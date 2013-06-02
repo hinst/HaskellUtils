@@ -2,6 +2,8 @@ module HMatrixUtil
 (
 	sampleVectors,
 	searchVector,
+	vectorChooseMax,
+	vectorChooseMin,
 	visualTestMinMaxVectorElementSearching
 )
 where 
@@ -12,14 +14,14 @@ import MyTrace
 
 sampleVectors = 
 	[ 
-		5 |> [-16, 82, 14, -5, -100::Int],
-		10 |> [11, 13, 16, -17, 0, 19, 19, 19, 12, -6::Int]
+		fromList [-16, 82, 14, -5, -100::Int],
+		fromList [11, 13, 16, -17, 0, 19, 19, 19, 12, -6::Int]
 	]
 
-type FindElementSelectorFunction t = (t -> t -> Int)
+type SelectVectorElementFunction t = (t -> t -> Int)
 
 searchVector :: 
-	(Storable t) => Vector t -> FindElementSelectorFunction t -> Int
+	(Storable t) => Vector t -> SelectVectorElementFunction t -> Int
 searchVector theVector compareFunction = 
 	go (-1) 0
 	where
@@ -81,26 +83,10 @@ searchVector theVector compareFunction =
 					else
 						-1
 
-vectorMinIndex :: (Ord t, Storable t) => Vector t -> Int
-vectorMinIndex theVector = searchVector theVector minFunction
-	where
-		minFunction aValue bValue =
-			if 
-				aValue <= bValue 
-			then
-				0
-			else
-				1
+type SelectIndexedVectorElementFunction t = ((Int, t) -> (Int, t) -> Int)
+						
+--searchVectorIndexed :: (Storable t) => Vector t -> ()
 
-vectorChooseMax :: (Ord t) => t -> t -> Int
-vectorChooseMax aValue bValue =
-	if 
-		aValue >= bValue
-	then
-		0
-	else
-		1
-		
 vectorChooseMin :: (Ord t) => t -> t -> Int
 vectorChooseMin aValue bValue =
 	if
@@ -110,6 +96,15 @@ vectorChooseMin aValue bValue =
 	else
 		1
 				
+vectorChooseMax :: (Ord t) => t -> t -> Int
+vectorChooseMax aValue bValue =
+	if 
+		aValue >= bValue
+	then
+		0
+	else
+		1
+		
 showVectorElementAtIndex :: (Storable t, Show t) => Vector t -> Int -> String
 showVectorElementAtIndex theVector index =
 	if 
@@ -119,7 +114,7 @@ showVectorElementAtIndex theVector index =
 	else
 		"No"
 
-visualTestMinMaxVectorElementSearching :: (Storable t, Ord t, Show t) => Vector t -> String
+visualTestMinMaxVectorElementSearching :: Vector Double -> String
 visualTestMinMaxVectorElementSearching theVector = 
 	show theVector ++ ": " ++ min ++ " ... " ++ max
 	where
@@ -133,6 +128,7 @@ visualTestMinMaxVectorElementSearching theVector =
 			showVectorElementAtIndex
 				theVector
 				(searchVector theVector vectorChooseMax)
+		show = vecdisp (disps 2)
 
 
 
