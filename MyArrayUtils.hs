@@ -1,6 +1,7 @@
 module MyArrayUtils 
 (
 	NormalArray, 
+	NormalArray'(NormalArray'),
 	Normal2DArray, 
 	Normal2DArray',
 	Normal2DArrayIndexedElement,
@@ -23,6 +24,7 @@ import MyCountUtils
 import MyTrace
 
 type NormalArray elementType = Array Int elementType
+data NormalArray' elementType = NormalArray' (Array Int elementType)
 type Normal2DArray elementType = Array (Int, Int) elementType
 data Normal2DArray' elementType = Normal2DArray' (Array (Int, Int) elementType)
 type Normal2DArrayIndexedElement valueType = ((Int, Int), valueType)
@@ -52,8 +54,8 @@ generate2DArray list height width defaultElement =
 	//
 	list
 
-instance Countable (NormalArray elementType) where --here is an important note: -XFlexibleInstances command line argument must be used in order to compile this code
-	count theArray = snd (bounds theArray) + 1
+instance Countable (NormalArray' elementType) where
+	count (NormalArray' theArray) = snd (bounds theArray) + 1
 
 enableExtractArrayElementDebugTrace = False
 extractArrayElement :: NormalArray elementType -> Int -> elementType
@@ -64,7 +66,7 @@ extractArrayElement theArray index =
 		trace 
 			(
 				"<Now extracting element #" ++ show index
-				 ++ " count of elements in array: " ++ show (count theArray) ++ ">"
+				 ++ " count of elements in array: " ++ show (count (NormalArray' theArray)) ++ ">"
 			)
 			result
 	else
