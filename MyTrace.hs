@@ -12,4 +12,13 @@ trace text x =
 		Debug.Trace.trace text x
 	else
 		x
+
+traceif :: Bool -> String -> t -> t
+traceif condition text x =
+	if
+		condition
+	then
+		MyTrace.trace text x
+	else
+		x
  
